@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Profile & Medical Card - CARENEST{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="row g-4 mb-5">
+        <!-- Left: Digital Medical Emergency Card -->
+        <div class="col-lg-4">
+            <div class="carenest-card p-4 bg-white mb-4 text-center">
+                <div class="rounded-circle bg-success text-white fw-bold d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 80px; height: 80px; font-size: 2rem;">
+                    {{ user['name'][0] }}
+                </div>
+                <h4 class="fw-bold text-dark mb-1">{{ user['name'] }}</h4>
+                <p class="text-muted small mb-3">{{ user['email'] }}</p>
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-bold">
+                        Blood: {{ user['blood_group'] or 'O+' }}
+                    </span>
+                    <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill">
+                        Age: {{ user['age'] or 28 }} yrs
+                    </span>
+                </div>
+            </div>
+
+            <!-- Emergency Card -->
+            <div class="card border-0 shadow-sm rounded-4 bg-danger bg-opacity-10 border border-danger-subtle p-4">
+                <div class="d-flex align-items-center gap-2 text-danger fw-bold mb-3">
+                    <i class="bi bi-shield-exclamation fs-4"></i>
+                    <span>EMERGENCY MEDICAL BADGE</span>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted d-block">Allergies / Chronic Conditions:</small>
+                    <span class="fw-bold text-danger">{{ user['allergies'] or 'None recorded' }}</span>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted d-block">Emergency Contact Person:</small>
+                    <span class="fw-bold text-dark">{{ user['emergency_contact'] or 'Not provided' }}</span>
+                </div>
+                <div>
+                    <small class="text-muted d-block">Member Since:</small>
+                    <span class="text-secondary small">{{ user['created_at'][:10] if user['created_at'] else '2026' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Edit Profile Form -->
+        <div class="col-lg-8">
+            <div class="carenest-card p-4 p-md-5 bg-white">
+                <div class="mb-4">
+                    <h4 class="fw-bold text-dark mb-1"><i class="bi bi-person-gear text-success me-2"></i> Update Medical Profile</h4>
+                    <p class="text-muted small">Keep your medical profile and emergency contacts up to date for rapid clinical assistance.</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('profile') }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Full Name *</label>
+                            <input type="text" name="name" class="form-control bg-light" value="{{ user['name'] }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Registered Email (Read-Only)</label>
+                            <input type="email" class="form-control bg-light" value="{{ user['email'] }}" disabled>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Phone Number</label>
+                            <input type="text" name="phone" class="form-control bg-light" value="{{ user['phone'] or '' }}" placeholder="+1 (555) 000-0000">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Blood Group</label>
+                            <select name="blood_group" class="form-select bg-light">
+                                {% for bg in ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] %}
+                                <option value="{{ bg }}" {% if user['blood_group'] == bg %}selected{% endif %}>{{ bg }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Age</label>
+                            <input type="number" name="age" class="form-control bg-light" value="{{ user['age'] or 28 }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Gender</label>
+                            <select name="gender" class="form-select bg-light">
+                                <option value="" disabled {% if not user['gender'] %}selected{% endif %}>Select your gender</option>
+                                {% for g in ['Female', 'Male', 'Non-Binary', 'Prefer not to say'] %}
+                                <option value="{{ g }}" {% if user['gender'] == g %}selected{% endif %}>{{ g }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Known Allergies / Medical Notes</label>
+                            <input type="text" name="allergies" class="form-control bg-light" value="{{ user['allergies'] or '' }}" placeholder="e.g. Penicillin, Peanuts, Pollen">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Emergency Contact (Name & Number)</label>
+                            <input type="text" name="emergency_contact" class="form-control bg-light" value="{{ user['emergency_contact'] or '' }}" placeholder="e.g. Robert Jenkins (+1 555-987-6543)">
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-end">
+                        <button type="submit" class="btn btn-carenest-primary rounded-pill px-4">
+                            <i class="bi bi-check2-circle me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

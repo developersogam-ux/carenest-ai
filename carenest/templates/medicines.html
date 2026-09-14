@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Medicines & Pharmaceutical Directory - CARENEST{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Header with Search & Filter -->
+    <div class="carenest-card p-4 bg-white mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+            <div>
+                <h3 class="fw-bold text-dark mb-1"><i class="bi bi-capsule text-success me-2"></i> Pharmaceutical & Medicine Directory</h3>
+                <p class="text-muted small mb-0">Search verified therapeutics, recommended dosages, indications, and potential side-effects.</p>
+            </div>
+        </div>
+
+        <form method="GET" action="{{ url_for('medicines') }}" class="row g-2">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control bg-light" placeholder="Search by medicine name, symptoms treated, or manufacturer..." value="{{ current_search }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="category" class="form-select bg-light">
+                    <option value="">All Drug Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat['category'] }}" {% if current_category == cat['category'] %}selected{% endif %}>{{ cat['category'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-carenest-primary w-100"><i class="bi bi-funnel"></i> Filter</button>
+                {% if current_search or current_category %}
+                <a href="{{ url_for('medicines') }}" class="btn btn-light border"><i class="bi bi-x-lg"></i></a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Medicines Grid -->
+    <div class="row g-4 mb-5">
+        {% if medicines %}
+            {% for m in medicines %}
+            <div class="col-md-6 col-xl-4">
+                <div class="carenest-card p-4 bg-white h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge bg-success-subtle text-success rounded-pill fw-semibold">{{ m['category'] }}</span>
+                            {% if m['stock_status'] == 'In Stock' %}
+                                <span class="badge bg-light text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i>In Stock</span>
+                            {% else %}
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"><i class="bi bi-prescription2 me-1"></i>Rx Required</span>
+                            {% endif %}
+                        </div>
+
+                        <h5 class="fw-bold text-dark mb-1">{{ m['name'] }}</h5>
+                        <div class="text-muted small mb-3">Manufacturer: <strong>{{ m['manufacturer'] or 'Generic Health' }}</strong></div>
+
+                        <div class="p-3 bg-light rounded-3 mb-3">
+                            <div class="text-muted small fw-semibold mb-1"><i class="bi bi-info-circle text-primary me-1"></i> Clinical Indication:</div>
+                            <p class="small text-secondary mb-2">{{ m['usage_instructions'] }}</p>
+
+                            <div class="text-muted small fw-semibold mb-1"><i class="bi bi-clock-history text-success me-1"></i> Recommended Dosage:</div>
+                            <p class="small text-secondary mb-0 fw-semibold">{{ m['dosage'] }}</p>
+                        </div>
+
+                        {% if m['side_effects'] %}
+                        <div class="small text-muted mb-2">
+                            <span class="fw-semibold text-danger"><i class="bi bi-exclamation-octagon me-1"></i>Side Effects:</span> {{ m['side_effects'] }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span class="text-muted small">Standard Est. Price:</span>
+                            <div class="fw-bold fs-5 text-success">${{ "%.2f"|format(m['price']) }}</div>
+                        </div>
+                        <button class="btn btn-sm btn-carenest-secondary rounded-pill px-3" onclick="alert('Medicines are provided through certified pharmacy partners upon presenting a validated prescription.')">
+                            <i class="bi bi-bag-plus me-1"></i> Pharmacy Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-capsule text-muted fs-1 mb-2"></i>
+                <h5 class="fw-bold text-dark">No medicines found</h5>
+                <p class="text-muted small">Try broadening your search term or selecting 'All Drug Categories'.</p>
+                <a href="{{ url_for('medicines') }}" class="btn btn-sm btn-outline-success">Reset Filter</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

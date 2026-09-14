@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Medicines - CARENEST Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Admin Sidebar -->
+    <aside class="sidebar-carenest d-none d-md-flex bg-white">
+        <div class="p-3 mb-2 bg-danger bg-opacity-10 rounded-4 text-center">
+            <h6 class="fw-bold mb-0 text-dark">Executive Admin</h6>
+            <small class="text-danger fw-semibold">Pharmacy Directory</small>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="sidebar-item"><i class="bi bi-speedometer2"></i> System Overview</a>
+        <a href="{{ url_for('manage_doctors') }}" class="sidebar-item"><i class="bi bi-person-badge"></i> Manage Doctors</a>
+        <a href="{{ url_for('manage_medicines') }}" class="sidebar-item active"><i class="bi bi-capsule text-danger"></i> Manage Medicines</a>
+        <a href="{{ url_for('manage_hospitals') }}" class="sidebar-item"><i class="bi bi-hospital"></i> Manage Hospitals</a>
+        <a href="{{ url_for('analytics') }}" class="sidebar-item"><i class="bi bi-bar-chart-line"></i> Reports & Analytics</a>
+        <div class="mt-auto pt-3 border-top"><a href="{{ url_for('admin_logout') }}" class="sidebar-item text-danger"><i class="bi bi-box-arrow-right"></i> Admin Logout</a></div>
+    </aside>
+
+    <div class="main-content-carenest">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold text-dark mb-1">Pharmaceutical Inventory & Formulary</h3>
+                <p class="text-muted small mb-0">Add, edit pricing, update stock status, and document therapeutic indications.</p>
+            </div>
+            <button class="btn btn-carenest-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#addMedicineModal">
+                <i class="bi bi-plus-circle-fill me-1"></i> Catalog New Drug
+            </button>
+        </div>
+
+        <div class="carenest-card bg-white p-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Medicine & Brand</th>
+                            <th>Category</th>
+                            <th>Dosage & Instructions</th>
+                            <th>Est. Price</th>
+                            <th>Status</th>
+                            <th>Manufacturer</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if medicines %}
+                            {% for m in medicines %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ m['name'] }}</div>
+                                    <small class="text-muted text-truncate" style="max-width: 250px; display: block;">{{ m['usage_instructions'] }}</small>
+                                </td>
+                                <td><span class="badge bg-light text-secondary border">{{ m['category'] }}</span></td>
+                                <td class="small">{{ m['dosage'] }}</td>
+                                <td class="fw-bold text-success">${{ "%.2f"|format(m['price']) }}</td>
+                                <td>
+                                    {% if m['stock_status'] == 'In Stock' %}
+                                        <span class="badge bg-success-subtle text-success">In Stock</span>
+                                    {% else %}
+                                        <span class="badge bg-warning-subtle text-warning">Rx Required</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small text-muted">{{ m['manufacturer'] }}</td>
+                                <td class="text-end">
+                                    <form method="POST" action="{{ url_for('manage_medicines') }}" onsubmit="return confirm('Remove medicine item?');" class="d-inline">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="medicine_id" value="{{ m['id'] }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="7" class="text-center py-4 text-muted">No medicines found.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Medicine Modal -->
+<div class="modal fade" id="addMedicineModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-dark"><i class="bi bi-capsule text-success me-2"></i> Catalog New Medicine</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('manage_medicines') }}">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="add">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Medicine Brand & Strength *</label>
+                            <input type="text" name="name" class="form-control bg-light" placeholder="e.g. Paracetamol Extra 500mg" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Therapeutic Category *</label>
+                            <input type="text" name="category" class="form-control bg-light" placeholder="e.g. Analgesic, Antibiotic, Antacid" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Recommended Dosage *</label>
+                            <input type="text" name="dosage" class="form-control bg-light" placeholder="e.g. 1 tablet twice daily after meals" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Usage Instructions / Indications *</label>
+                            <input type="text" name="usage_instructions" class="form-control bg-light" placeholder="e.g. For fever, body aches and inflammation" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Estimated Unit Price ($)</label>
+                            <input type="number" step="0.01" name="price" class="form-control bg-light" value="9.50" min="0" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Stock / Prescription Status</label>
+                            <select name="stock_status" class="form-select bg-light">
+                                <option value="In Stock">In Stock (OTC)</option>
+                                <option value="Prescription Required">Prescription Required (Rx)</option>
+                                <option value="Out of Stock">Out of Stock</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Manufacturer</label>
+                            <input type="text" name="manufacturer" class="form-control bg-light" placeholder="e.g. Glaxo Bio, Apex Pharma">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Known Side Effects</label>
+                            <input type="text" name="side_effects" class="form-control bg-light" placeholder="e.g. Mild drowsiness, dry mouth">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-carenest-primary rounded-pill px-4">Save to Formulary</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

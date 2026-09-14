@@ -1,0 +1,6 @@
+{
+  "name": "CareNest - Healthcare & Hospital Portal",
+  "description": "A comprehensive healthcare web platform featuring patient dashboards, smart symptom triage, hospital network, doctor appointment booking, pharmaceutical formulary, medical reports, and administrative operations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Home - CARENEST Healthcare{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Hero Banner -->
+    <div class="hero-medical-gradient p-4 p-md-5 mb-4 shadow">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-white text-success px-3 py-1 rounded-pill fw-bold mb-3">
+                    <i class="bi bi-shield-fill-check me-1"></i> CareNest Certified Network
+                </span>
+                <h1 class="display-6 fw-bold mb-3">Welcome to CareNest, {{ user['name'] }}</h1>
+                <p class="lead opacity-90 mb-4" style="max-width: 650px;">
+                    Your unified clinical portal for checking health symptoms, connecting with accredited doctors, scheduling consultations, and accessing verified medicines.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('symptom_checker') }}" class="btn btn-light text-success fw-bold px-4 py-2 rounded-pill shadow-sm">
+                        <i class="bi bi-clipboard2-pulse me-2"></i> Start Symptom Check
+                    </a>
+                    <a href="{{ url_for('hospitals') }}" class="btn btn-outline-light fw-bold px-4 py-2 rounded-pill">
+                        <i class="bi bi-hospital me-2"></i> Find Hospitals & Doctors
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-center">
+                <div class="p-4 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-25 text-start">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-3 bg-white text-success rounded-circle shadow-sm">
+                            <i class="bi bi-heart-pulse fs-3"></i>
+                        </div>
+                        <div>
+                            <div class="small text-white-50">Patient Vitals Record</div>
+                            <div class="fw-bold fs-5 text-white">Blood Group: {{ user['blood_group'] or 'O+' }}</div>
+                        </div>
+                    </div>
+                    <div class="text-white-50 small">
+                        Emergency: {{ user['emergency_contact'] or 'Hotline: 911' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Action Cards Grid -->
+    <div class="row g-3 mb-5">
+        <div class="col-md-3">
+            <div class="carenest-card carenest-card-interactive p-4 h-100 bg-white">
+                <div class="stat-icon-wrapper bg-success-subtle text-success mb-3">
+                    <i class="bi bi-clipboard-pulse"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Symptom Checker</h5>
+                <p class="text-muted small mb-3">Identify potential ailments and recommended clinical specialists based on your symptoms.</p>
+                <a href="{{ url_for('symptom_checker') }}" class="text-success fw-bold text-decoration-none small">
+                    Start Assessment <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="carenest-card carenest-card-interactive p-4 h-100 bg-white">
+                <div class="stat-icon-wrapper bg-primary-subtle text-primary mb-3">
+                    <i class="bi bi-hospital"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Hospital Network</h5>
+                <p class="text-muted small mb-3">Browse multi-specialty hospitals, emergency bed availability, and book appointments.</p>
+                <a href="{{ url_for('hospitals') }}" class="text-primary fw-bold text-decoration-none small">
+                    Explore Facilities <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="carenest-card carenest-card-interactive p-4 h-100 bg-white">
+                <div class="stat-icon-wrapper bg-warning-subtle text-warning mb-3">
+                    <i class="bi bi-capsule"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Medicine Directory</h5>
+                <p class="text-muted small mb-3">Explore comprehensive usage instructions, dosage guidelines, and potential side-effects.</p>
+                <a href="{{ url_for('medicines') }}" class="text-warning fw-bold text-decoration-none small">
+                    Search Medicines <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="carenest-card carenest-card-interactive p-4 h-100 bg-white">
+                <div class="stat-icon-wrapper bg-info-subtle text-info mb-3">
+                    <i class="bi bi-file-earmark-medical"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">My Health Reports</h5>
+                <p class="text-muted small mb-3">Review past checkup summaries, export clinical notes, and share diagnostic assessments.</p>
+                <a href="{{ url_for('reports') }}" class="text-info fw-bold text-decoration-none small">
+                    View Records <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Doctors & Top Facilities -->
+    <div class="row g-4 mb-4">
+        <!-- Top Hospitals -->
+        <div class="col-lg-6">
+            <div class="carenest-card p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-building text-success me-2"></i> Accredited Hospitals</h5>
+                    <a href="{{ url_for('hospitals') }}" class="text-success small fw-semibold text-decoration-none">View All</a>
+                </div>
+                <div class="d-flex flex-column gap-3">
+                    {% for h in top_hospitals %}
+                    <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light border border-light-subtle">
+                        <img src="{{ h['image_url'] or 'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=100&auto=format&fit=crop&q=80' }}" alt="{{ h['name'] }}" class="rounded-3 object-fit-cover" style="width: 65px; height: 65px;">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold text-dark mb-1">{{ h['name'] }}</h6>
+                                <span class="badge bg-success-subtle text-success"><i class="bi bi-star-fill text-warning me-1"></i>{{ h['rating'] }}</span>
+                            </div>
+                            <div class="text-muted small mb-1"><i class="bi bi-geo-alt me-1"></i>{{ h['city'] }} - {{ h['address'] }}</div>
+                            <span class="badge bg-primary-subtle text-primary small">{{ h['beds_available'] }} Beds Available</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Specialists -->
+        <div class="col-lg-6">
+            <div class="carenest-card p-4 h-100 bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-person-badge text-success me-2"></i> Leading Medical Specialists</h5>
+                    <a href="{{ url_for('hospitals') }}" class="text-success small fw-semibold text-decoration-none">Consult Doctors</a>
+                </div>
+                <div class="d-flex flex-column gap-3">
+                    {% for d in featured_doctors %}
+                    <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light border border-light-subtle">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-success-subtle text-success p-3 fs-4">
+                                <i class="bi bi-person-heart"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">{{ d['name'] }}</h6>
+                                <div class="text-success small fw-semibold">{{ d['specialty'] }} &bull; {{ d['experience_years'] }} yrs exp</div>
+                                <div class="text-muted small">{{ d['hospital_name'] or 'Central Medical Network' }}</div>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('hospitals') }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                            Book
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

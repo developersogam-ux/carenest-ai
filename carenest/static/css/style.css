@@ -1,0 +1,286 @@
+/* =========================================================
+   CARENEST - Modern Medical & Healthcare Portal Theme
+   Green & White Clean Clinical Design System
+   ========================================================= */
+
+:root {
+  --primary-emerald: #059669;
+  --primary-emerald-dark: #047857;
+  --primary-emerald-light: #10b981;
+  --accent-teal: #0d9488;
+  --accent-cyan: #06b6d4;
+  --bg-soft-green: #f0fdf4;
+  --bg-canvas: #f8fafc;
+  --card-bg: rgba(255, 255, 255, 0.92);
+  --card-border: rgba(226, 232, 240, 0.8);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --radius-card: 20px;
+  --radius-button: 12px;
+  --radius-pill: 9999px;
+  --shadow-subtle: 0 4px 20px -2px rgba(16, 185, 129, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 12px 30px -4px rgba(16, 185, 129, 0.16), 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Card System */
+.carenest-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-subtle);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.carenest-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.carenest-card-interactive:hover {
+  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+/* Green Gradient Hero Banner */
+.hero-medical-gradient {
+  background: linear-gradient(135deg, #065f46 0%, #059669 50%, #0d9488 100%);
+  color: #ffffff;
+  border-radius: var(--radius-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-medical-gradient::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Auth Pages (Login & Register) */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 10% 20%, #ecfdf5 0%, #f8fafc 90%);
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  max-width: 1000px;
+  width: 100%;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 20px 40px -15px rgba(5, 150, 105, 0.15);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.auth-illustration-side {
+  background: linear-gradient(145deg, #047857 0%, #059669 60%, #10b981 100%);
+  color: white;
+  padding: 3.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* Custom Buttons */
+.btn-carenest-primary {
+  background: linear-gradient(135deg, var(--primary-emerald) 0%, var(--accent-teal) 100%);
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: var(--radius-button);
+  padding: 0.7rem 1.4rem;
+  border: none;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-carenest-primary:hover {
+  background: linear-gradient(135deg, var(--primary-emerald-dark) 0%, #0f766e 100%);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.35);
+}
+
+.btn-carenest-secondary {
+  background: #f0fdf4;
+  color: var(--primary-emerald-dark);
+  font-weight: 600;
+  border-radius: var(--radius-button);
+  padding: 0.7rem 1.4rem;
+  border: 1px solid #bbf7d0;
+  transition: all 0.2s ease;
+}
+
+.btn-carenest-secondary:hover {
+  background: #dcfce7;
+  color: var(--primary-emerald-dark);
+  border-color: #86efac;
+}
+
+/* Navbar */
+.carenest-navbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  padding: 0.75rem 1.5rem;
+}
+
+.nav-link.active-carenest {
+  color: var(--primary-emerald) !important;
+  font-weight: 700;
+  background-color: #ecfdf5;
+  border-radius: 10px;
+}
+
+/* Sidebar Dashboard Layout */
+.dashboard-layout {
+  display: flex;
+  min-height: calc(100vh - 72px);
+}
+
+.sidebar-carenest {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  color: #475569;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.15s ease;
+}
+
+.sidebar-item:hover {
+  background-color: #f1f5f9;
+  color: var(--primary-emerald);
+}
+
+.sidebar-item.active {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  color: var(--primary-emerald-dark);
+  font-weight: 700;
+}
+
+.main-content-carenest {
+  flex: 1;
+  padding: 2rem;
+  background-color: var(--bg-canvas);
+  overflow-y: auto;
+}
+
+/* Badges & Metric Stat Cards */
+.stat-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.badge-severity-mild {
+  background-color: #dcfce7;
+  color: #15803d;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+}
+
+.badge-severity-moderate {
+  background-color: #fef3c7;
+  color: #b45309;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+}
+
+.badge-severity-high {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+}
+
+/* Symptom Pill Checkbox */
+.symptom-tag-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.symptom-tag-input:checked + .symptom-tag-label {
+  background-color: #ecfdf5;
+  border-color: var(--primary-emerald);
+  color: var(--primary-emerald-dark);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+/* Footer */
+.carenest-footer {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 1.5rem 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: auto;
+}
+
+/* Print Styling for Medical Reports */
+@media print {
+  .sidebar-carenest, .carenest-navbar, .no-print, .btn {
+    display: none !important;
+  }
+  .main-content-carenest {
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+  .carenest-card {
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+  }
+}

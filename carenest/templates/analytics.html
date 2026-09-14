@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Clinical Analytics - CARENEST Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Admin Sidebar -->
+    <aside class="sidebar-carenest d-none d-md-flex bg-white">
+        <div class="p-3 mb-2 bg-danger bg-opacity-10 rounded-4 text-center">
+            <h6 class="fw-bold mb-0 text-dark">Executive Admin</h6>
+            <small class="text-danger fw-semibold">Clinical Analytics</small>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="sidebar-item"><i class="bi bi-speedometer2"></i> System Overview</a>
+        <a href="{{ url_for('manage_doctors') }}" class="sidebar-item"><i class="bi bi-person-badge"></i> Manage Doctors</a>
+        <a href="{{ url_for('manage_medicines') }}" class="sidebar-item"><i class="bi bi-capsule"></i> Manage Medicines</a>
+        <a href="{{ url_for('manage_hospitals') }}" class="sidebar-item"><i class="bi bi-hospital"></i> Manage Hospitals</a>
+        <a href="{{ url_for('analytics') }}" class="sidebar-item active"><i class="bi bi-bar-chart-line text-danger"></i> Reports & Analytics</a>
+        <div class="mt-auto pt-3 border-top"><a href="{{ url_for('admin_logout') }}" class="sidebar-item text-danger"><i class="bi bi-box-arrow-right"></i> Admin Logout</a></div>
+    </aside>
+
+    <div class="main-content-carenest">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold text-dark mb-1">Healthcare Analytics & Diagnostic Telemetry</h3>
+                <p class="text-muted small mb-0">Visualized health risk assessments, formulary breakdown, and clinical triage audits.</p>
+            </div>
+            <button onclick="window.print()" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-printer me-1"></i> Export Analytics
+            </button>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+            <!-- Chart 1: Symptom Severity Distribution (Doughnut) -->
+            <div class="col-lg-5">
+                <div class="carenest-card p-4 bg-white h-100">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-pie-chart text-success me-2"></i> Triage Severity Breakdown</h5>
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="severityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 2: Medicine Formulary Distribution (Bar) -->
+            <div class="col-lg-7">
+                <div class="carenest-card p-4 bg-white h-100">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-bar-chart-steps text-primary me-2"></i> Medicines by Category</h5>
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Health Reports Audit Table -->
+        <div class="carenest-card bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-file-earmark-medical text-danger me-2"></i> Recent Patient Health Assessment Logs</h5>
+                <span class="badge bg-light text-muted border">Latest Records</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Patient</th>
+                            <th>Assessment Title</th>
+                            <th>Symptoms Logged</th>
+                            <th>Severity</th>
+                            <th>Recommended Specialist</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if reports %}
+                            {% for r in reports %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ r['user_name'] }}</div>
+                                    <small class="text-muted">{{ r['user_email'] }}</small>
+                                </td>
+                                <td class="fw-semibold text-dark">{{ r['report_title'] }}</td>
+                                <td class="small text-muted text-truncate" style="max-width: 200px;">{{ r['symptoms_logged'] }}</td>
+                                <td>
+                                    {% if 'High' in r['severity_level'] %}
+                                        <span class="badge-severity-high small">High</span>
+                                    {% elif 'Moderate' in r['severity_level'] %}
+                                        <span class="badge-severity-moderate small">Moderate</span>
+                                    {% else %}
+                                        <span class="badge-severity-mild small">Mild</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small text-success fw-semibold">{{ r['recommended_specialist'] }}</td>
+                                <td class="small text-muted">{{ r['created_at'][:10] }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="6" class="text-center py-4 text-muted">No diagnostic assessment reports generated yet.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart 1: Severity Doughnut Chart
+    const ctxSeverity = document.getElementById('severityChart').getContext('2d');
+    new Chart(ctxSeverity, {
+        type: 'doughnut',
+        data: {
+            labels: ['Mild', 'Moderate', 'High Priority'],
+            datasets: [{
+                data: [
+                    {{ severity_counts['Mild']|default(1) }},
+                    {{ severity_counts['Moderate']|default(1) }},
+                    {{ severity_counts['High Priority']|default(1) }}
+                ],
+                backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // Chart 2: Medicine Categories Bar Chart
+    const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+    const catLabels = [{% for c in category_meds %}'{{ c['category'] }}'{% if not loop.last %},{% endif %}{% endfor %}];
+    const catData = [{% for c in category_meds %}{{ c['count'] }}{% if not loop.last %},{% endif %}{% endfor %}];
+
+    new Chart(ctxCategory, {
+        type: 'bar',
+        data: {
+            labels: catLabels.length ? catLabels : ['Analgesic', 'Antibiotic', 'Antacid', 'Antihistamine', 'Respiratory'],
+            datasets: [{
+                label: 'Medicines Count',
+                data: catData.length ? catData : [3, 2, 2, 1, 1],
+                backgroundColor: '#059669',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Symptom Checker & Health Assessment - CARENEST{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <div class="row g-4">
+        <!-- Assessment Form -->
+        <div class="col-lg-7">
+            <div class="carenest-card p-4 p-md-5 bg-white h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon-wrapper bg-success-subtle text-success">
+                        <i class="bi bi-clipboard2-pulse"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold text-dark mb-0">Smart Symptom Triage</h4>
+                        <p class="text-muted small mb-0">Select your active symptoms for an automated clinical triage and specialist referral.</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-light border border-success-subtle rounded-3 small text-muted mb-4 d-flex align-items-start gap-2">
+                    <i class="bi bi-info-circle-fill text-success fs-5"></i>
+                    <div>
+                        <strong>Medical Note:</strong> This symptom checker provides preliminary educational triage and does not substitute emergency medical services. In case of acute chest pain or severe trauma, please dial 911 immediately.
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('symptom_checker') }}">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark small mb-2">1. Select Any Experiencing Symptoms *</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for s in all_symptoms %}
+                            <div>
+                                <input type="checkbox" name="symptoms" value="{{ s['symptom_name'] }}" id="sym_{{ s['id'] }}" class="btn-check symptom-tag-input" autocomplete="off">
+                                <label class="symptom-tag-label" for="sym_{{ s['id'] }}">
+                                    <i class="bi bi-activity text-success"></i>
+                                    {{ s['symptom_name'] }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="duration" class="form-label fw-bold text-dark small">2. Symptom Duration</label>
+                            <select class="form-select bg-light" id="duration" name="duration">
+                                <option value="Less than 24 Hours">Less than 24 Hours</option>
+                                <option value="1-3 Days" selected>1-3 Days</option>
+                                <option value="4-7 Days">4-7 Days</option>
+                                <option value="More than a week">More than a week</option>
+                                <option value="Chronic (Months)">Chronic (Months)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="additional_notes" class="form-label fw-bold text-dark small">3. Additional Context / Triggers</label>
+                            <input type="text" class="form-control bg-light" id="additional_notes" name="additional_notes" placeholder="e.g. Worsens at night, after eating">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-carenest-primary w-100 py-3 fw-bold fs-6">
+                        <i class="bi bi-cpu-fill me-2"></i> Analyze Symptoms & Generate Health Report
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Assessment Result Panel -->
+        <div class="col-lg-5">
+            <div class="carenest-card p-4 p-md-5 bg-white h-100">
+                <h4 class="fw-bold text-dark mb-3"><i class="bi bi-heart-pulse-fill text-success me-2"></i> Clinical Assessment</h4>
+
+                {% if assessment %}
+                <div class="p-4 rounded-4 border bg-light mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted small">{{ assessment['title'] }}</span>
+                        {% if 'High' in assessment['severity'] %}
+                            <span class="badge-severity-high"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ assessment['severity'] }}</span>
+                        {% elif 'Moderate' in assessment['severity'] %}
+                            <span class="badge-severity-moderate"><i class="bi bi-exclamation-circle-fill me-1"></i>{{ assessment['severity'] }}</span>
+                        {% else %}
+                            <span class="badge-severity-mild"><i class="bi bi-check-circle-fill me-1"></i>{{ assessment['severity'] }}</span>
+                        {% endif %}
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-2">Triage Summary:</h5>
+                    <p class="text-secondary small leading-relaxed mb-3">{{ assessment['diagnosis'] }}</p>
+
+                    <div class="p-3 bg-white rounded-3 border mb-3">
+                        <div class="text-muted small fw-semibold">Recommended Specialist:</div>
+                        <div class="fw-bold text-success fs-6"><i class="bi bi-person-badge-fill me-1"></i> {{ assessment['specialist'] }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-muted small fw-semibold mb-1">Recommended Precautions & Care:</div>
+                        <p class="small text-muted bg-white p-2 rounded border">{{ assessment['precautions'] }}</p>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <a href="{{ url_for('reports') }}" class="btn btn-carenest-primary btn-sm flex-grow-1 rounded-pill">
+                            <i class="bi bi-file-earmark-text me-1"></i> View in Reports
+                        </a>
+                        <a href="{{ url_for('hospitals') }}" class="btn btn-outline-success btn-sm flex-grow-1 rounded-pill">
+                            <i class="bi bi-calendar-plus me-1"></i> Book Specialist
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div class="rounded-circle bg-light d-inline-flex p-4 text-success mb-3">
+                        <i class="bi bi-clipboard2-check fs-1"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Ready to Assess</h5>
+                    <p class="text-muted small" style="max-width: 320px; margin: 0 auto;">
+                        Select symptoms from the list on the left to view recommended clinical care paths and precautions.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
